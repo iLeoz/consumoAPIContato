@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Consumo de API</title>
+</head>
+<body style="width: 100vw; height: 100vh;" class="d-flex flex-column bg-light align-items-center justify-content-start">
+  
+    <!-- Botóes -->
+    <div style="width: 95%;" class="buttons m-3 d-flex justify-content-between p-2 border ">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">Criar Contato</button>
+      <div style="width: 27%;" class="visibilityButtons d-flex justify-content-between">
+        <button type="button" class="btn btn-white" onclick="getContent()">Vizualizar Contatos</button>
+        <button type="button" onclick="ocultarClientes()" class="btn btn-secondary">Ocultar Contatos</button>
+      </div>
+    </div>
+    
+    <!-- Modal de criação -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="TituloModalCentralizado">Criar Contato</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="nome">Nome</label>
+                  <input type="text" required class="form-control" id="nome" placeholder="Nome">
+                </div>
+
+                <div class="form-group">
+                  <label for="telefone">Telefone</label>
+                  <input type="text" required class="form-control" id="telefone" placeholder="Telefone" pattern="^((1[1-9])|([2-9][0-9]))((3[0-9]{3}[0-9]{4})|(9[0-9]{3}[0-9]{5}))$" title="O telefone deve conter o formato:  889XXXXYYYY">
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" required class="form-control" id="email" placeholder="Email">
+                </div>
+
+                <div class="form-group form-check">
+                  <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                  <label class="form-check-label" for="exampleCheck1">Ativo</label>
+                </div>
+
+                <div class="form-group">
+                  <label for="dataNascimento">Data de nascimento</label>
+                  <input type="date" required class="form-control" id="dataNascimento" placeholder="Data de nascimento">
+                </div>
+
+                <input type="submit" class="btn btn-primary" onclick="createUser()" value="Criar"></input>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+
+    <!-- Modal de Deleção -->
+    <div class="modal fade" id="deletarModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="TituloModalCentralizado">Deletar contato</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="idDelete">Insira o id do contato</label>
+                <input type="number" required class="form-control" id="idDelete" placeholder="Id para deletar">
+              </div>
+              <input type="submit" class="btn btn-danger" onclick="deletar()" value="Deletar"></input>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+
+      <!-- Modal de Edição -->
+    <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="TituloModalCentralizado">Editar dados do contato</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="nome">Nome</label>
+                  <input type="text" required class="form-control" id="mudarNome" placeholder="Nome">
+                </div>
+
+                <div class="form-group">
+                  <label for="telefone">Telefone</label>
+                  <input type="tel" required class="form-control" id="mudarTelefone" placeholder="Telefone" pattern="^((1[1-9])|([2-9][0-9]))((3[0-9]{3}[0-9]{4})|(9[0-9]{3}[0-9]{5}))$" title="O telefone deve conter o formato:  889XXXXYYYY">
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" required class="form-control" id="mudarEmail" placeholder="Email">
+                </div>
+
+                <div class="form-group form-check">
+                  <input type="checkbox" class="form-check-input" id="exampleCheck2">
+                  <label class="form-check-label" for="exampleCheck2">Ativo</label>
+                </div>
+
+                <div class="form-group">
+                  <label for="mudarDataNascimento">Data de nascimento</label>
+                  <input type="date" required class="form-control" id="mudarDataNascimento" placeholder="Data de nascimento">
+                </div>
+
+                <input type="submit" class="btn btn-primary" onclick="auxEditar()" value="Alterar"></input>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </form>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para a vizualização de um contato especifico -->
+    <div class="modal fade" id="vizualizarModal2" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="TituloModalCentralizado">Dados do contato com ID <span id="idSpan"></span></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+               <h5>Nome: <span id="nomeSpan"></span></h5>
+               <h5>Telefone: <span id="telefoneSpan"></span></h5>
+               <h5>Email: <span id="emailSpan"></span></h5>
+               <h5>Ativo: <span id="ativoSpan"></span></h5>
+               <h5>Data de Nascimento: <span id="dataNascimentoSpan"></span></h5>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Local onde os contatos serão exibidos -->
+    <section style="width: 95%;" id="one">
+    </section>
+
+
+    <script src="main.js"></script>
+    <script src="https://kit.fontawesome.com/5e8e504839.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>
