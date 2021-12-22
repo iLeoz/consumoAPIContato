@@ -99,25 +99,43 @@ async function auxEditar() {
   let telefone = document.getElementById("mudarTelefone").value;
   let check = document.getElementById("exampleCheck2").checked;
   let dataNascimento = document.getElementById("mudarDataNascimento").value;
-
-  try {
-    const response = await fetch(`${url}/${idMudarCliente}`, {
-      method: "PUT",
-      id:idMudarCliente,
-      body: JSON.stringify({
-        nome: nome,
-        telefone: telefone,
-        email: email,
-        ativo: check,
-        dataNascimento: dataNascimento,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    const data = await response.json();
-  } catch (error) {
-    console.error(error);
+  if (
+    nome != "" &&
+    telefone != "" &&
+    email != "" &&
+    dataNascimento != "" &&
+    validateEmail(email) &&
+    validatePhone(telefone) &&
+    data_valida(dataNascimento)
+  ) {
+    try {
+      const response = await fetch(`${url}/${idMudarCliente}`, {
+        method: "PUT",
+        id: idMudarCliente,
+        body: JSON.stringify({
+          nome: nome,
+          telefone: telefone,
+          email: email,
+          ativo: check,
+          dataNascimento: dataNascimento,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      const data = await response.json();
+      if (data) {
+        alert("Contato Alterado");
+      } else {
+        alert("Não foi possivel alterar");
+      }
+      await getContent();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    alert("Por favor, Preencha os dado corretamente !");
   }
 }
 
@@ -128,9 +146,21 @@ async function deletar(element) {
     const data = await response.json();
     let target = element.id;
     let newTarget = parseInt(target.slice(1, 5));
-    fetch(`${url}/${newTarget}`, {
+    let requisicao = await fetch(`${url}/${newTarget}`, {
       method: "DELETE",
-    }).then(window.location.reload());
+    }).then();
+
+    if (requisicao.status === 200) {
+      alert("Contato deletado");
+      window.location.reload();
+    } else {
+      await fetch(`${url}/${newTarget}`, {
+        method: "DELETE",
+      }).then();
+      if (requisicao.status !== 200) {
+        alert("Não foi possivel deletar o contato.");
+      }
+    }
   } catch (error) {
     console.error(error);
   }
@@ -146,6 +176,8 @@ async function getContent() {
     console.error(error);
   }
 }
+
+getContent();
 
 // Vizualizar um contato especifico
 async function vizualizarContato(element) {
@@ -220,48 +252,62 @@ function show(users) {
     </tr>
   </thead>
   <tbody>`;
+  let usuarios = [];
+  let contador = 0;
+
   for (let user of users) {
-    let ativo = user.ativo;
-    let simbol = "";
-    if (ativo) {
-      simbol = `<i class="fas fa-check"></i>`;
-    } else {
-      simbol = `<i class="fas fa-times"></i>`;
-    }
-    html += `
-    <tr>
-      <th scope="row">${user.id}</th>
-      <td>${user.nome}</td>
-      <td>${user.email}</td>
-      <td>${
-        "(" +
-        user.telefone.substring(0, 2) +
-        ")" +
-        " " +
-        user.telefone.substring(2, 7) +
-        "-" +
-        user.telefone.substring(7, 11)
-      }</td>
-      <td>${simbol}</td>
-      <td>${
-        user.dataNascimento.substring(8, 10) +
-        "/" +
-        user.dataNascimento.substring(5, 7) +
-        "/" +
-        user.dataNascimento.substring(0, 4)
-      }</td>
-      <td><button type="button" class="btn btn-info" id="a${
-        user.id
-      }" data-toggle="modal" data-target="#vizualizarModal2" onclick="vizualizarContato(this)">Vizualizar Contato</button>
-      <button type="button" class="btn btn-warning" id="b${
-        user.id
-      }" data-toggle="modal" data-target="#editarModal" onclick="alterarDadosCliente(this)">Editar Contato</button>
-      <button type="button" class="btn btn-danger" id="c${
-        user.id
-      } data-toggle="modal" data-target="#deletarModal" href="#" onclick="deletar(this)">Deletar Contato</button>
-      
-      `;
+    usuarios[contador] = user.id;
+    contador++;
   }
+
+  usuarios = usuarios.sort();
+  for (let i = 0; i < contador; i++) {
+    for (let user of users) {
+      if (user.id === usuarios[i]) {
+        let ativo = user.ativo;
+        let simbol = "";
+        if (ativo) {
+          simbol = `<i class="fas fa-check"></i>`;
+        } else {
+          simbol = `<i class="fas fa-times"></i>`;
+        }
+        html += `
+      <tr>
+        <th scope="row">${user.id}</th>
+        <td>${user.nome}</td>
+        <td>${user.email}</td>
+        <td>${
+          "(" +
+          user.telefone.substring(0, 2) +
+          ")" +
+          " " +
+          user.telefone.substring(2, 7) +
+          "-" +
+          user.telefone.substring(7, 11)
+        }</td>
+        <td>${simbol}</td>
+        <td>${
+          user.dataNascimento.substring(8, 10) +
+          "/" +
+          user.dataNascimento.substring(5, 7) +
+          "/" +
+          user.dataNascimento.substring(0, 4)
+        }</td>
+        <td><button type="button" class="btn btn-info" id="a${
+          user.id
+        }" data-toggle="modal" data-target="#vizualizarModal2" onclick="vizualizarContato(this)">Vizualizar Contato</button>
+        <button type="button" class="btn btn-warning" id="b${
+          user.id
+        }" data-toggle="modal" data-target="#editarModal" onclick="alterarDadosCliente(this)">Editar Contato</button>
+        <button type="button" class="btn btn-danger" id="c${
+          user.id
+        } data-toggle="modal" data-target="#deletarModal" href="#" onclick="deletar(this)">Deletar Contato</button>
+        
+        `;
+      }
+    }
+  }
+
   document.getElementById("one").innerHTML =
     html +
     `</tbody>
@@ -272,4 +318,8 @@ function show(users) {
 function ocultarClientes() {
   let html = "";
   document.getElementById("one").innerHTML = html;
+}
+// Fechar modal de edição
+function closeModal() {
+  $("#editarModal").modal("hide");
 }
